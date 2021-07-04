@@ -1,0 +1,101 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+# 1.영상의 Color & Histogram
+# =========
+# 
+# * Histogram 정의: 도수 분포를 나타내는 그래프를 뜻함
+# * 영상에서의 Histogram: 2차원(Color 차원 및 비디오의 시계열을 제외하고 말함) 영상에서 각 픽셀이 가지는 값(Intensity)의 분포를 표현함
+# * 가로축은 픽셀값, 세로축은 해당 픽셀값의 개수
+# 
+# **과제**
+# 1. RGB, CMYK, HSV Color Space 변환 코드 작성 및 출력 이미지
+# 2. Histogram 코드 작성 
+#     - plt.hist() / np.histogram() 등 함수 사용 불가. 
+#     - 단 plt.plot() 으로 histogram을 출력하는 것은 가능
+#     - Hint: cv2 로 이미지를 불러오면 기본적으로 0~255 사이의 Intensity 가짐. np.array or list 활용하여 Counting
+# 3. RGB Histogram 출력
+
+
+import os
+import cv2 as cv
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+def RGB2BGR(img):
+    r_img = img.copy()[:,:,0]
+    g_img = img.copy()[:,:,1]
+    b_img = img.copy()[:,:,2]
+    img[:,:,0] = b_img
+    img[:,:,1] = g_img
+    img[:,:,2] = r_img
+    return img
+
+def HSV2VSH(img):
+    
+
+def RGB2HSV(img):
+    r = (img.copy()[:,:,0])/255
+    g = (img.copy()[:,:,1])/255
+    b = (img.copy()[:,:,2])/255
+    v = np.max(img/255,axis=2)
+    h = r
+    s = r
+    for i in range(0,v.shape[0]):
+        for j in range(0,v.shape[1]):
+            if v[i][j]==0:
+                0
+            else:
+                s[i][j] = (v[i][j]-np.min(img[i][j]/255.))/v[i][j]
+
+    for i in range(0,v.shape[0]):
+        for j in range(0,v.shape[1]):
+            if v[i][j] == r[i][j]:
+                h[i][j] = 60*(g[i][j]-b[i][j])/(v[i][j]-np.min(img[i][j]/255.))
+                if h[i][j] < 0:
+                    h += 360
+            elif v[i][j] == g[i][j]:
+                h[i][j] = 120+(60*(b[i][j]-r[i][j])/(v[i][j]-np.min(img[i][j]/255.)))
+                if h[i][j] < 0:
+                    h += 360
+            else:
+                h[i][j] = 240+(60*(r[i][j]-g[i][j])/(v[i][j]-np.min(img[i][j]/255.)))
+                if h[i][j] < 0:
+                    h += 360
+    hsv_img = (np.dstack((h,s,v))*255).astype(np.uint8)
+    
+            
+    return hsv_img
+
+def RGB2CMYK(img):
+    k = 1-np.max(img/255.,axis=2)
+    c = (1-img[:,:,2]/255.- k)/(1-k)
+    m = (1-img[:,:,1]/255 - k)/(1-k)
+    y = (1-img[:,:,0]/255 - k)/(1-k)
+    cmyk_img = (np.dstack((c,m,y,k))*255).astype(np.uint8)
+
+    return cmyk_img
+                
+            
+def histogram(img,data):
+    x_axis = np.array([0])
+    y_axis = np.array([0])
+    for i in range (0,data.shape[0]):
+        for j in range(0,data.shape[1]):
+            var = data[i][j]
+            for k in range(0,len(x_axis)):
+                if x_axis[k] == var:
+                    y_axis[k] += 1
+                    break
+
+                elif k == len(x_axis)-1:
+                    x_axis = np.append(x_axis,var)
+                    y_axis = np.append(y_axis,1)
+                    break
+    plt.plot(x_axis,y_axis,"r-")
+    
+    
+        
+lena = cv.imread("lena.jpg",cv.IMREAD_COLOR)
+img = RGB2HSV(lena)
+cv.imshow("change_image",img)
